@@ -1,68 +1,60 @@
-import axios from "axios";
-import { getSessionData } from "src/Utils/asyncStorage";
+import axios from 'axios';
+import {getSessionData, setSessionData} from 'src/Utils/asyncStorage';
 
-export const LOGIN_KEY = "LoginToken";
+export const LOGIN_KEY = 'LoginToken';
 
 export const postApicall = (url, payload, success, error) => {
-  console.log('signin',payload,url);
   axios
     .post(url, payload, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     })
-    .then((res) => {
-      console.log('success', res)
+    .then(res => {
       if (success) {
-        success(res.data);
+        setSessionData(LOGIN_KEY, res?.data?.token);
+        success(res?.data);
       }
     })
-    .catch((err) => {
-      console.log('signin err',err);
-      error(err)
+    .catch(err => {
+      error(err);
     });
 };
 
 export const postApicallToken = async (url, payload, success, error) => {
-  console.log('payload', url, payload)
   const token = await getSessionData(LOGIN_KEY);
   axios
     .post(url, payload, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((res) => {
-      console.log('success postApicallToken', res)
+    .then(res => {
       if (success) {
-        success(res.data);
+        success(res?.data);
       }
     })
-    .catch((err) => {
-      console.log('err',err);
-      if(err){
-        error()
+    .catch(err => {
+      if (err) {
+        error(err);
       }
     });
-}
+};
 
 export const getApicall = async (url, success) => {
-  console.log('url', url)
   const token = await getSessionData(LOGIN_KEY);
   axios
     .get(url, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((res) => {
+    .then(res => {
       if (success) {
-        success(res.data);
+        success(res?.data);
       }
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch(err => {});
 };

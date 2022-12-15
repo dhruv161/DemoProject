@@ -2,19 +2,18 @@ import React, {useEffect, useState} from 'react';
 import {
   View,
   FlatList,
-  TouchableWithoutFeedback,
   Image,
   Text,
-  Dimensions,
+  Pressable
 } from 'react-native';
-import theme from 'src/Utils/theme';
 import SearchBar from 'src/Components/SearchBar';
 import Loader from 'src/Components/Loader';
 import * as Api from 'src/Utils/Api';
 import ApiConstants from 'src/Utils/apiConstants';
 import styles from './style';
-import { SwiperFlatList, Pagination } from 'react-native-swiper-flatlist';
-
+import {SwiperFlatList, Pagination} from 'react-native-swiper-flatlist';
+import {getSessionData} from '../../Utils/asyncStorage';
+import {LOGIN_KEY} from '../../Utils/Api';
 
 const ProductList = ({navigation}) => {
   const searchInitialState = {
@@ -30,40 +29,28 @@ const ProductList = ({navigation}) => {
   const [paginationInfo, setPaginationInfo] = useState(searchInitialState);
   const [orderList, setOrderList] = useState([]);
   const [searchList, setSearchList] = useState(searchInitialState);
-  console.log('searchList ', searchList);
-  console.log('orderList --- >>> ', orderList);
-  console.log('searchText == >> == ', searchText);
-  console.log('paginationInfo --- >>> ', paginationInfo);
   const [dataCount, setdataCount] = useState(0);
-  const [searchDataCount, setSearchDataCount] = useState(0);
-  console.log('dataCount --- ', dataCount);
-  const [
-    onEndReachedCalledDuringMomentum,
-    setOnEndReachedCalledDuringMomentum,
-  ] = useState(true);
 
   const onProductListSucess = async data => {
-    console.log('DATA', data);
-    data?.products?.length > 0 ?setPaginationInfo({...data,isPaginationAllowed:true}):setPaginationInfo({...data,isPaginationAllowed:fasle});
+    data?.products?.length > 0
+      ? setPaginationInfo({...data, isPaginationAllowed: true})
+      : setPaginationInfo({...data, isPaginationAllowed: fasle});
     setOrderList(prevState => [...prevState, ...data?.products]);
-    // orderList.lenght > 0 ? setOrderList(...orderList, ...data?.products) : setOrderList(data?.products);
     setLoading(false);
   };
 
   const onProductSearchSucess = async data => {
-    console.log('DATA', data);
     data?.products?.length > 0
       ? setSearchList(prevState => ({
           ...data,
-          products: [...prevState?.products, ...data?.products,],
-          isPaginationAllowed: true
+          products: [...prevState?.products, ...data?.products],
+          isPaginationAllowed: true,
         }))
       : setSearchList(prev => ({...prev, isPaginationAllowed: false}));
     setLoading(false);
   };
 
   const getProductList = (limit, skip) => {
-    console.log('getProductList ', paginationInfo?.limit * dataCount);
     setLoading(true);
     Api.getApicall(
       ApiConstants.BASE_URL +
@@ -77,11 +64,9 @@ const ProductList = ({navigation}) => {
   };
   useEffect(() => {
     getProductList(10, 0);
-    // getProductList(dataCount * limitAndSkipCount);
   }, []);
 
-  const getProductListSearch = (text, limit=10,skip=0) => {
-    // setLoading(true);
+  const getProductListSearch = (text, limit = 10, skip = 0) => {
     if (searchList?.limit < searchList?.total) {
       Api.getApicall(
         ApiConstants.BASE_URL +
@@ -102,11 +87,9 @@ const ProductList = ({navigation}) => {
   };
 
   const search = text => {
-    setSearchList(searchInitialState);
-    getProductListSearch(text);
-    // const filteredData = searchCredentialsList(credentials, text)
-    // setOrderList(data?.products)
     setSearchText(text);
+    setSearchList(searchInitialState);
+    getProductListSearch(searchText);
   };
 
   const onScrollHandler = () => {
@@ -117,32 +100,32 @@ const ProductList = ({navigation}) => {
         paginationInfo?.limit,
         incresedCount * paginationInfo?.limit,
       );
-      // setOnEndReachedCalledDuringMomentum(true);
-      console.log('api call should not be hit ');
     }
   };
-
+  
   const scrollHandlerForSearchedItem = () => {
-    if (searchList?.isPaginationAllowed) {
+    if (!(searchList?.products?.length === searchList?.total)) {
       const skipNo = searchList?.limit + searchList?.skip;
-      // const limitNo = !!searchList?.limit
       getProductListSearch(searchText, searchList?.limit, skipNo);
     }
   };
 
+  const onProductClick = item => async () => {
+    const token = await getSessionData(LOGIN_KEY);
+    !!token
+      ? navigation?.navigate('ProductDetails', {data: item?.id})
+      : navigation?.navigate('Login', {data: item?.id});
+  };
 
-  const cardItem = ({ item }) => {
+  const cardItem = ({item}) => {
     return (
       <View>
-        <Image
-          source={{ uri: item }}
-          style={styles.image}
-        />
+        <Image source={{uri: item}} style={styles.image} />
       </View>
-    )
-  }
+    );
+  };
 
-  const customPagination = (props) => {
+  const customPagination = props => {
     return (
       <Pagination
         {...props}
@@ -154,39 +137,47 @@ const ProductList = ({navigation}) => {
     );
   };
 
-  const renderItem = ({item}) => (
-    <TouchableWithoutFeedback onPress={() => navigation.navigate('Login', { data: item.id })}>
-      <View style={styles.mainCardView}>
-      <SwiperFlatList
-        showPagination
-        data={item?.images}
-        renderItem={cardItem}
-        PaginationComponent={customPagination}
-      />
-      <View>
-        <Text style={styles.title}>{item?.brand}</Text>
-        <Text style={styles.description}>{item?.description}</Text>
+  const renderItem = ({item, index}) => {
+    return (
+      <Pressable onPress={onProductClick(item)}>
+        <View style={styles.mainCardView}>
+          <SwiperFlatList
+            showPagination
+            data={item?.images}
+            renderItem={cardItem}
+            PaginationComponent={customPagination}
+          />
+          <View style={styles.titleDescContainer}>
+            <Text style={styles.title}>{item?.brand}</Text>
+            <Text style={styles.description}>
+              {item?.description?.length > 60
+                ? `${item?.description?.slice(0, 60)?.trim()}...`
+                : item?.description}
+            </Text>
+          </View>
         </View>
-      </View>
-     </TouchableWithoutFeedback>
-  );
+      </Pressable>
+    );
+  };
 
-  const listEmptyComponent = () => (
-    <View style={{marginTop: '45%', alignSelf: 'center'}}>
-      <Image
-        source={require('../../Assets/images/searchEmpty.png')}
-        style={{width: 200, height: 200}}
-      />
-      <Text style={styles.noSearch}>No results found</Text>
-    </View>
-  );
+  const listEmptyComponent = () => {
+    return (
+      <View style={styles.emptyItemContainer} key={new Date().getTime() / 1000}>
+        <Image
+          source={require('../../Assets/images/searchEmpty.png')}
+          style={styles.emptyImage}
+        />
+        <Text style={styles.noSearch}>No results found</Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
       <Loader loading={loading} />
       <SearchBar
         searchPhrase={searchText}
-        setSearchPhrase={setSearchText => search(setSearchText)}
+        setSearchPhrase={setSearchText =>search(setSearchText)}
         clicked={clicked}
         setClicked={setClicked}
       />
@@ -197,8 +188,6 @@ const ProductList = ({navigation}) => {
           onEndReached={() => scrollHandlerForSearchedItem()}
           onEndReachedThreshold={0.1}
           keyExtractor={(item, index) => index.toString()}
-          ListHeaderComponent={<View style={{width: '100%'}} />}
-          ListFooterComponent={<View style={{width: '100%', height: 28}} />}
           ListEmptyComponent={listEmptyComponent}
           renderItem={renderItem}
         />
@@ -209,10 +198,6 @@ const ProductList = ({navigation}) => {
           onEndReached={() => onScrollHandler()}
           onEndReachedThreshold={0.1}
           keyExtractor={(item, index) => index.toString()}
-          ListHeaderComponent={
-            <View style={{width: '100%'}} />
-          }
-          ListFooterComponent={<View style={{width: '100%', height: 28}} />}
           renderItem={renderItem}
         />
       )}

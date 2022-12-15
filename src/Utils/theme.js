@@ -11,5 +11,6 @@ export default {
   SEARCH_BG: '#E6E9EB',
   SEARCH_ICON: '#003549',
   BOADER:'#DCE2F9',
-  RED: '#FF0000'
+  RED: '#FF0000',
+  Link:'#0079a7'
 };

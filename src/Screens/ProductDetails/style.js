@@ -9,24 +9,48 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.BLACK,
   },
+  footerContainer : {
+    flex: 1,
+    margin: verticalScale(20),
+    marginTop: verticalScale(50),
+  },
   title: {
     fontFamily: fonts.montserrat_Regular,
     color: theme.WHITE,
-    fontSize: verticalScale(14),
+    fontWeight:'400',
+    letterSpacing:0.5,
+    fontSize: verticalScale(20),
     marginTop:verticalScale(15),
   },
   description:{
     fontFamily: fonts.montserrat_Regular,
     color: theme.WHITE,
+    letterSpacing:0.5,
     fontSize: verticalScale(12),
     marginTop:verticalScale(15),
+  },
+  dateTxt:{
+    fontFamily: fonts.montserrat_Regular,
+    color: theme.WHITE,
+    letterSpacing:0.5,
+    fontSize: verticalScale(9),
+    marginTop:verticalScale(15),
+  },
+  readmoreText:{
+    fontFamily: fonts.montserrat_Regular,
+    color: theme.Link,
+    fontSize: verticalScale(12),
+    marginTop:verticalScale(15),
+    textDecorationLine:'underline'
+  },
+  icon:{
+    alignSelf: 'flex-start', padding: verticalScale(10)
   },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignSelf: 'center',
     top:  height * 0.72,
-    // bottom: height * 0.24,
   },
   pagination: {
     width: 40,

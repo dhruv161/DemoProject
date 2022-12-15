@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Keyboard } from "react-native";
-import { verticalScale } from "react-native-size-matters";
 import theme from "src/Utils/theme";
 import styles from "./style";
 import Button from "src/Components/Button";
@@ -9,9 +8,7 @@ import ApiConstants from "src/Utils/apiConstants";
 import Loader from "src/Components/Loader";
 import Snackbar from 'react-native-snackbar';
 
-
 const Login = ({ navigation, route }) => {
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,7 +46,7 @@ const Login = ({ navigation, route }) => {
       password,
     };
     {
-      username.length > 0 && password.length > 0 ? (
+      username?.length > 0 && password?.length > 0 ? (
         Api.postApicall(
           ApiConstants.BASE_URL + ApiConstants.LOGIN,
           params,
@@ -71,7 +68,9 @@ const Login = ({ navigation, route }) => {
     <View style={styles.container}>
       <Loader loading={loading} />
       <Text style={styles.title}>Login</Text>
+      <View style={styles.innerContainer}>
       <Text style={styles.usernameTitle}>Username</Text>
+      {/* Input field */}
       <TextInput
         selectionColor={theme.GRAY}
         placeholder="Username"
@@ -84,6 +83,7 @@ const Login = ({ navigation, route }) => {
         blurOnSubmit={false}
       />
       <Text style={styles.usernameTitle}>Password</Text>
+      {/* Input field */}
       <TextInput
         selectionColor={theme.GRAY}
         placeholder="Password"
@@ -96,7 +96,8 @@ const Login = ({ navigation, route }) => {
         blurOnSubmit={false}
         secureTextEntry
       />
-      <View style={{ flex: 1, justifyContent: 'flex-end', bottom: verticalScale(20) }}>
+      </View>
+      <View style={styles.bottomContainer}>
         <Button Title={"CONTINUE"} onPress={() => onLoginSubmit()} />
       </View>
     </View>
