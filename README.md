@@ -59,16 +59,6 @@ If you have a build error with this message on Windows, it means that you must a
 
 My value on windows: *```C:\Users\Manuel\AppData\Local\Android\sdk\platform-tools```*
 
-### failed to find target with hash string 'android-23'
-
-React Native needs this to be installed in order to work, and the default target installed by *Android Studio* is the 24th. To solve this issue, open android studio and click on SDK Manager Icon:
-
-![SDK Manager](https://i.snag.gy/bxQd0z.jpg)
-
-Then click on the line with API Level of value 23 and apply.
-
-![Install API 23 Instructions](https://i.snag.gy/LtYAR7.jpg)
-
 ### Execution failed for task ':app:dexDebug'
 
 Go into the **android** project's folder in your terminal and run
