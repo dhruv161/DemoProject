@@ -2,14 +2,18 @@
 
 # Context and goal
 
-This app is made to be simple and may help people knowing React & Redux to get into creating mobile apps. It's made with React Native, coupled with some extra nice packages to handle routing, dataflow and UI elements.
+This app is made to be simple and may help people knowing React & React Navigation to get into creating mobile apps. It's made with React Native, coupled with some extra nice packages to handle routing, dataflow and UI elements.
 
 ## Main technologies used
 
 - [React Native](https://github.com/facebook/react-native)
+> A framework for building native apps with React.
 
-> React Native Router based on new React Native Navigation API.
 - [React Native Navigation](https://reactnavigation.org/docs/getting-started)
+> React Native Router based on new React Native Navigation API.
+
+- [React Native Swiper Flatlist](https://www.npmjs.com/package/react-native-swiper-flatlist)
+> React Native Swiper Flatlist based on react-native-swiper-flatlist package.
 
 ## Running the project
 
